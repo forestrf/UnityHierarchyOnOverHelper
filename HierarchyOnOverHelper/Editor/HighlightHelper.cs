@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
@@ -11,25 +11,10 @@ public class HighlightHelper {
 	static HighlightHelper() {
 		EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI;
 
-		EditorApplication.update += EditorUpdate;
-
 		SceneView.duringSceneGui += OnSceneGUIDelegate;
 
 		Assembly editorAssembly = typeof(EditorWindow).Assembly;
 		HierarchyWindowType = editorAssembly.GetType("UnityEditor.SceneHierarchyWindow");
-	}
-
-	private static void EditorUpdate() {
-		var currentWindow = EditorWindow.mouseOverWindow;
-		if (currentWindow && currentWindow.GetType() == HierarchyWindowType) {
-			if (!currentWindow.wantsMouseMove) {
-				//allow the hierarchy window to use mouse move events!
-				currentWindow.wantsMouseMove = true;
-			}
-		}
-		else {
-			_hoveredInstance = 0;
-		}
 	}
 
 	private static readonly Color HoverColor = new Color(1, 1, 1, 1);
@@ -42,6 +27,17 @@ public class HighlightHelper {
 			case EventType.DragExited:
 				sceneView.Repaint();
 				break;
+		}
+
+		var currentWindow = EditorWindow.mouseOverWindow;
+		if (currentWindow && currentWindow.GetType() == HierarchyWindowType) {
+			if (!currentWindow.wantsMouseMove) {
+				//allow the hierarchy window to use mouse move events!
+				currentWindow.wantsMouseMove = true;
+			}
+		}
+		else {
+			_hoveredInstance = 0;
 		}
 
 		if (Event.current.type == EventType.Repaint) {
